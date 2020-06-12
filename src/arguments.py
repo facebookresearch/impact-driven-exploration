@@ -9,7 +9,7 @@ import argparse
 parser = argparse.ArgumentParser(description='PyTorch Scalable Agent')
 
 # General Settings.
-parser.add_argument('--env', type=str, default='MiniGrid-MultiRoom-N7-S4-v0',
+parser.add_argument('--env', type=str, default='MiniGrid-ObstructedMaze-2Dlh-v0',
                     help='Gym environment. Other options are: SuperMarioBros-1-1-v0 \
                     or VizdoomMyWayHomeDense-v0 etc.')
 parser.add_argument('--xpid', default=None,
