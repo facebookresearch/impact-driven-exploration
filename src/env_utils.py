@@ -31,23 +31,40 @@ class Environment:
         self.gym_env = gym_env
         self.episode_return = None
         self.episode_step = None
+        self.episode_win = None
         self.fix_seed = fix_seed
         self.env_seed = env_seed
+
+    def get_partial_obs(self):
+        return self.gym_env.env.env.gen_obs()['image']
 
     def initial(self):
         initial_reward = torch.zeros(1, 1)
         self.episode_return = torch.zeros(1, 1)
         self.episode_step = torch.zeros(1, 1, dtype=torch.int32)
+        self.episode_win = torch.zeros(1, 1, dtype=torch.int32)
         initial_done = torch.ones(1, 1, dtype=torch.uint8)
         if self.fix_seed:
             self.gym_env.seed(seed=self.env_seed)
         initial_frame = _format_observation(self.gym_env.reset())
+        partial_obs = _format_observation(self.get_partial_obs())
+
+        if self.gym_env.env.env.carrying:
+            carried_col, carried_obj = torch.LongTensor([[COLOR_TO_IDX[self.gym_env.env.env.carrying.color]]]), torch.LongTensor([[OBJECT_TO_IDX[self.gym_env.env.env.carrying.type]]])
+        else:
+            carried_col, carried_obj = torch.LongTensor([[5]]), torch.LongTensor([[1]])   
+
         return dict(
             frame=initial_frame,
             reward=initial_reward,
             done=initial_done,
             episode_return=self.episode_return,
-            episode_step=self.episode_step)
+            episode_step=self.episode_step,
+            episode_win=self.episode_win,
+            carried_col = carried_col,
+            carried_obj = carried_obj, 
+            partial_obs=partial_obs
+            )
         
     def step(self, action):
         frame, reward, done, _ = self.gym_env.step(action.item())
@@ -58,23 +75,42 @@ class Environment:
         self.episode_return += reward
         episode_return = self.episode_return 
 
+        if done and reward > 0:
+            self.episode_win[0][0] = 1 
+        else:
+            self.episode_win[0][0] = 0 
+        episode_win = self.episode_win 
+        
         if done:
             if self.fix_seed:
                 self.gym_env.seed(seed=self.env_seed)
             frame = self.gym_env.reset()
             self.episode_return = torch.zeros(1, 1)
             self.episode_step = torch.zeros(1, 1, dtype=torch.int32)
+            self.episode_win = torch.zeros(1, 1, dtype=torch.int32)
 
         frame = _format_observation(frame)
         reward = torch.tensor(reward).view(1, 1)
         done = torch.tensor(done).view(1, 1)
+        partial_obs = _format_observation(self.get_partial_obs())
         
+        if self.gym_env.env.env.carrying:
+            carried_col, carried_obj = torch.LongTensor([[COLOR_TO_IDX[self.gym_env.env.env.carrying.color]]]), torch.LongTensor([[OBJECT_TO_IDX[self.gym_env.env.env.carrying.type]]])
+        else:
+            carried_col, carried_obj = torch.LongTensor([[5]]), torch.LongTensor([[1]])   
+
+
         return dict(
             frame=frame,
             reward=reward,
             done=done,
             episode_return=episode_return,
-            episode_step=episode_step)
+            episode_step = episode_step,
+            episode_win = episode_win,
+            carried_col = carried_col,
+            carried_obj = carried_obj, 
+            partial_obs=partial_obs
+            )
 
     def get_full_obs(self):
         env = self.gym_env.unwrapped

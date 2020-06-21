@@ -28,10 +28,10 @@ import src.losses as losses
 from src.env_utils import FrameStack
 from src.utils import get_batch, log, create_env, create_buffers, act
 
-
 MinigridPolicyNet = models.MinigridPolicyNet
 MarioDoomPolicyNet = models.MarioDoomPolicyNet
 
+FullObsMinigridPolicyNet = models.FullObsMinigridPolicyNet
 
 def learn(actor_model,
           model,
@@ -139,7 +139,10 @@ def train(flags):
         env = FrameStack(env, flags.num_input_frames)  
 
     if 'MiniGrid' in flags.env: 
-        model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)
+        if flags.use_fullobs_policy:
+            model = FullObsMinigridPolicyNet(env.observation_space.shape, env.action_space.n)
+        else:
+            model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)
     else:
         model = MarioDoomPolicyNet(env.observation_space.shape, env.action_space.n)
 
@@ -171,8 +174,12 @@ def train(flags):
         actor_processes.append(actor)
 
     if 'MiniGrid' in flags.env: 
-        learner_model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)\
-            .to(device=flags.device)
+        if flags.use_fullobs_policy:
+            learner_model = FullObsMinigridPolicyNet(env.observation_space.shape, env.action_space.n)\
+                .to(device=flags.device)
+        else:
+            learner_model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)\
+                .to(device=flags.device)
     else:
         learner_model = MarioDoomPolicyNet(env.observation_space.shape, env.action_space.n)\
             .to(device=flags.device)

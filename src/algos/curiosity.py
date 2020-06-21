@@ -29,7 +29,6 @@ import src.losses as losses
 from src.env_utils import FrameStack
 from src.utils import get_batch, log, create_env, create_buffers, act
 
-
 MinigridStateEmbeddingNet = models.MinigridStateEmbeddingNet
 MinigridForwardDynamicsNet = models.MinigridForwardDynamicsNet
 MinigridInverseDynamicsNet = models.MinigridInverseDynamicsNet
@@ -40,6 +39,8 @@ MarioDoomForwardDynamicsNet = models.MarioDoomForwardDynamicsNet
 MarioDoomInverseDynamicsNet = models.MarioDoomInverseDynamicsNet
 MarioDoomPolicyNet = models.MarioDoomPolicyNet
 
+FullObsMinigridStateEmbeddingNet = models.FullObsMinigridStateEmbeddingNet
+FullObsMinigridPolicyNet = models.FullObsMinigridPolicyNet
 
 def learn(actor_model,
           model,
@@ -58,8 +59,14 @@ def learn(actor_model,
           lock=threading.Lock()):
     """Performs a learning (optimization) step."""
     with lock:
-        state_emb = state_embedding_model(batch['frame'][:-1].to(device=flags.device))
-        next_state_emb = state_embedding_model(batch['frame'][1:].to(device=flags.device))
+        if flags.use_fullobs_intrinsic:
+            state_emb = state_embedding_model(batch, next_state=False)\
+                    .reshape(flags.unroll_length, flags.batch_size, 128)
+            next_state_emb = state_embedding_model(batch, next_state=True)\
+                    .reshape(flags.unroll_length, flags.batch_size, 128)
+        else:
+            state_emb = state_embedding_model(batch['partial_obs'][:-1].to(device=flags.device))
+            next_state_emb = state_embedding_model(batch['partial_obs'][1:].to(device=flags.device))
 
         pred_next_state_emb = forward_dynamics_model(\
             state_emb, batch['action'][1:].to(device=flags.device))
@@ -190,9 +197,16 @@ def train(flags):
         env = FrameStack(env, flags.num_input_frames)  
 
     if 'MiniGrid' in flags.env:
-        model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)                        
-        state_embedding_model = MinigridStateEmbeddingNet(env.observation_space.shape)\
-            .to(device=flags.device) 
+        if flags.use_fullobs_policy:
+            model = FullObsMinigridPolicyNet(env.observation_space.shape, env.action_space.n)                        
+        else:
+            model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)                        
+        if flags.use_fullobs_intrinsic:
+            state_embedding_model = FullObsMinigridStateEmbeddingNet(env.observation_space.shape)\
+                .to(device=flags.device) 
+        else:
+            state_embedding_model = MinigridStateEmbeddingNet(env.observation_space.shape)\
+                .to(device=flags.device) 
         forward_dynamics_model = MinigridForwardDynamicsNet(env.action_space.n)\
             .to(device=flags.device) 
         inverse_dynamics_model = MinigridInverseDynamicsNet(env.action_space.n)\
@@ -233,8 +247,12 @@ def train(flags):
         actor_processes.append(actor)
   
     if 'MiniGrid' in flags.env: 
-        learner_model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)\
-            .to(device=flags.device)
+        if flags.use_fullobs_policy:
+            learner_model = FullObsMinigridPolicyNet(env.observation_space.shape, env.action_space.n)\
+                .to(device=flags.device)
+        else:
+            learner_model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)\
+                .to(device=flags.device)
     else:
         learner_model = MarioDoomPolicyNet(env.observation_space.shape, env.action_space.n)\
             .to(device=flags.device)

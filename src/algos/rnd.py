@@ -29,13 +29,14 @@ import src.losses as losses
 from src.env_utils import FrameStack
 from src.utils import get_batch, log, create_env, create_buffers, act
 
-
 MinigridPolicyNet = models.MinigridPolicyNet
 MinigridStateEmbeddingNet = models.MinigridStateEmbeddingNet
 
 MarioDoomPolicyNet = models.MarioDoomPolicyNet
 MarioDoomStateEmbeddingNet = models.MarioDoomStateEmbeddingNet
 
+FullObsMinigridPolicyNet = models.FullObsMinigridPolicyNet
+FullObsMinigridStateEmbeddingNet = models.FullObsMinigridStateEmbeddingNet
 
 def learn(actor_model,
           model,
@@ -51,8 +52,14 @@ def learn(actor_model,
           lock=threading.Lock()):
     """Performs a learning (optimization) step."""
     with lock:
-        random_embedding = random_target_network(batch['frame'][1:].to(device=flags.device))
-        predicted_embedding = predictor_network(batch['frame'][1:].to(device=flags.device))
+        if flags.use_fullobs_intrinsic:
+            random_embedding = random_target_network(batch, next_state=True)\
+                    .reshape(flags.unroll_length, flags.batch_size, 128)        
+            predicted_embedding = predictor_network(batch, next_state=True)\
+                    .reshape(flags.unroll_length, flags.batch_size, 128)
+        else:
+            random_embedding = random_target_network(batch['partial_obs'][1:].to(device=flags.device))
+            predicted_embedding = predictor_network(batch['partial_obs'][1:].to(device=flags.device))
 
         intrinsic_rewards = torch.norm(predicted_embedding.detach() - random_embedding.detach(), dim=2, p=2)
 
@@ -160,9 +167,16 @@ def train(flags):
         env = FrameStack(env, flags.num_input_frames)  
 
     if 'MiniGrid' in flags.env: 
-        model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)                        
-        random_target_network = MinigridStateEmbeddingNet(env.observation_space.shape).to(device=flags.device) 
-        predictor_network = MinigridStateEmbeddingNet(env.observation_space.shape).to(device=flags.device) 
+        if flags.use_fullobs_policy:
+            model = FullObsMinigridPolicyNet(env.observation_space.shape, env.action_space.n)                        
+        else:
+            model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)    
+        if flags.use_fullobs_intrinsic:                        
+            random_target_network = FullObsMinigridStateEmbeddingNet(env.observation_space.shape).to(device=flags.device) 
+            predictor_network = FullObsMinigridStateEmbeddingNet(env.observation_space.shape).to(device=flags.device)             
+        else:
+            random_target_network = MinigridStateEmbeddingNet(env.observation_space.shape).to(device=flags.device) 
+            predictor_network = MinigridStateEmbeddingNet(env.observation_space.shape).to(device=flags.device) 
     else:
         model = MarioDoomPolicyNet(env.observation_space.shape, env.action_space.n)
         random_target_network = MarioDoomStateEmbeddingNet(env.observation_space.shape).to(device=flags.device) 
@@ -196,8 +210,12 @@ def train(flags):
         actor_processes.append(actor)
 
     if 'MiniGrid' in flags.env: 
-        learner_model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)\
-            .to(device=flags.device)
+        if flags.use_fullobs_policy:
+            learner_model = FullObsMinigridPolicyNet(env.observation_space.shape, env.action_space.n)\
+                .to(device=flags.device)
+        else:
+            learner_model = MinigridPolicyNet(env.observation_space.shape, env.action_space.n)\
+                .to(device=flags.device)
     else:
         learner_model = MarioDoomPolicyNet(env.observation_space.shape, env.action_space.n)\
             .to(device=flags.device)

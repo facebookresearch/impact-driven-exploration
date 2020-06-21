@@ -8,8 +8,8 @@ We propose a novel type of intrinsic reward which encourges the agent to take ac
 
 ```
 # create a new conda environment
-conda create -n ride-env python=3.6.8
-conda activate ride-env 
+conda create -n ride python=3.7
+conda activate ride 
 
 # install dependencies
 git clone git@github.com:fairinternal/impact-driven-exploration.git
