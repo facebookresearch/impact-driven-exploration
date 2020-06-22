@@ -12,7 +12,7 @@ conda create -n ride python=3.7
 conda activate ride 
 
 # install dependencies
-git clone git@github.com:fairinternal/impact-driven-exploration.git
+git clone git@github.com:facebookresearch/impact-driven-exploration.git
 cd impact-driven-exploration
 pip install -r requirements.txt
 ```
@@ -23,7 +23,8 @@ cd impact-driven-exploration
 
 OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-ObstructedMaze-2Dlh-v0 
 
-OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-KeyCorridorS3R3-v0 --intrinsic_reward_coef 0.1 --entropy_cost 0.0005
+OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-KeyCorridorS3R3-v0 \
+--intrinsic_reward_coef 0.1 --entropy_cost 0.0005
 ```
 
 ## Acknowledgements
