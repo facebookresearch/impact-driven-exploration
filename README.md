@@ -1,7 +1,9 @@
 # RIDE: Rewarding Impact-Driven Exploration for Procedurally-Generated Environments
 
 This is an implementation of the method proposed in 
+
 <a href="https://openreview.net/pdf?id=rkg-TJBFPB">RIDE: Rewarding Impact-Driven Exploration for Procedurally-Generated Environments</a> 
+
 by Roberta Raileanu and Tim Rocktäschel, published at ICLR 2020. 
 
 We propose a novel type of intrinsic reward which encourges the agent to take actions that result in significant changes to its representation of the environment state.
@@ -10,8 +12,7 @@ The code includes all the baselines and ablations used in the paper.
 
 The code was also used to run the baselines in [Learning with AMIGO:
 Adversarially Motivated Intrinsic Goals](https://arxiv.org/pdf/2006.12122.pdf). 
-See [the associated repo](https://github.com/facebookresearch/
-adversarially-motivated-intrinsic-goals) for instructions on how to reproduce the results from that paper.
+See [the associated repo](https://github.com/facebookresearch/adversarially-motivated-intrinsic-goals) for instructions on how to reproduce the results from that paper.
 
 ## Citation
 If you use this code in your own work, please cite our paper:
