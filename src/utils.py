@@ -188,14 +188,15 @@ def act(i: int, free_queue: mp.SimpleQueue, full_queue: mp.SimpleQueue,
                 for episode_state_key in episode_state_count_dict:
                     episode_state_count_dict = dict()
 
-            # Update the training state counts
-            train_state_key = tuple(env_output['frame'].view(-1).tolist())
-            if train_state_key in train_state_count_dict:
-                train_state_count_dict[train_state_key] += 1
-            else:
-                train_state_count_dict.update({train_state_key: 1})
-            buffers['train_state_count'][index][0, ...] = \
-                torch.tensor(1 / np.sqrt(train_state_count_dict.get(train_state_key)))
+            # Update the training state counts if you're doing count-based exploration
+            if flags.model == 'count':
+                train_state_key = tuple(env_output['frame'].view(-1).tolist())
+                if train_state_key in train_state_count_dict:
+                    train_state_count_dict[train_state_key] += 1
+                else:
+                    train_state_count_dict.update({train_state_key: 1})
+                buffers['train_state_count'][index][0, ...] = \
+                    torch.tensor(1 / np.sqrt(train_state_count_dict.get(train_state_key)))
 
             # Do new rollout
             for t in range(flags.unroll_length):
@@ -229,14 +230,15 @@ def act(i: int, free_queue: mp.SimpleQueue, full_queue: mp.SimpleQueue,
                 if env_output['done'][0][0]:
                     episode_state_count_dict = dict()
 
-                # Update the training state counts
-                train_state_key = tuple(env_output['frame'].view(-1).tolist())
-                if train_state_key in train_state_count_dict:
-                    train_state_count_dict[train_state_key] += 1
-                else:
-                    train_state_count_dict.update({train_state_key: 1})
-                buffers['train_state_count'][index][t + 1, ...] = \
-                    torch.tensor(1 / np.sqrt(train_state_count_dict.get(train_state_key)))
+                # Update the training state counts if you're doing count-based exploration
+                if flags.model == 'count':
+                    train_state_key = tuple(env_output['frame'].view(-1).tolist())
+                    if train_state_key in train_state_count_dict:
+                        train_state_count_dict[train_state_key] += 1
+                    else:
+                        train_state_count_dict.update({train_state_key: 1})
+                    buffers['train_state_count'][index][t + 1, ...] = \
+                        torch.tensor(1 / np.sqrt(train_state_count_dict.get(train_state_key)))
 
                 timings.time('write')
             full_queue.put(index)
