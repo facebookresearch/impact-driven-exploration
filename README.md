@@ -18,12 +18,12 @@ See [the associated repo](https://github.com/facebookresearch/adversarially-moti
 If you use this code in your own work, please cite our paper:
 ```
 @inproceedings{
-Raileanu2020RIDE:,
-title={RIDE: Rewarding Impact-Driven Exploration for Procedurally-Generated Environments},
-author={Roberta Raileanu and Tim Rocktäschel},
-booktitle={International Conference on Learning Representations},
-year={2020},
-url={https://openreview.net/forum?id=rkg-TJBFPB}
+  Raileanu2020RIDE:,
+  title={{RIDE: Rewarding Impact-Driven Exploration for Procedurally-Generated Environments}},
+  author={Roberta Raileanu and Tim Rockt{\"{a}}schel},
+  booktitle={International Conference on Learning Representations},
+  year={2020},
+  url={https://openreview.net/forum?id=rkg-TJBFPB}
 }
 ```
 
