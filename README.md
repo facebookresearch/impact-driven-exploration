@@ -38,6 +38,10 @@ conda activate ride
 git clone git@github.com:facebookresearch/impact-driven-exploration.git
 cd impact-driven-exploration
 pip install -r requirements.txt
+
+# install MiniGrid
+cd gym-minigrid
+python setup.py install
 ```
 
 ## Train RIDE on MiniGrid
