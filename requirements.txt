@@ -34,6 +34,6 @@ torch==1.1.0
 torchvision==0.3.0
 tqdm==4.40.2
 virtualenv==20.0.21
-vizdoom==1.1.7
+vizdoom==1.1.8
 -e git+https://github.com/shakenes/vizdoomgym.git@bf2b891038d172180bcfe88b144534caeef7bb38#egg=vizdoomgym
 zipp==3.1.0
