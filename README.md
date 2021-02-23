@@ -53,6 +53,18 @@ OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-ObstructedMaze-2Dlh
 OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-KeyCorridorS3R3-v0 \
 --intrinsic_reward_coef 0.1 --entropy_cost 0.0005
 ```
+To train RIDE on the other MiniGrid environments used in our paper, replace the ```--env``` argument above with each of the following:
+```
+MiniGrid-MultiRoom-N7-S4-v0
+MiniGrid-MultiRoomNoisyTV-N7-S4-v0
+MiniGrid-MultiRoom-N7-S8-v0
+MiniGrid-MultiRoom-N10-S4-v0
+MiniGrid-MultiRoom-N10-S10-v0
+MiniGrid-MultiRoom-N12-S10-v0
+MiniGrid-ObstructedMaze-2Dlh-v0 
+MiniGrid-KeyCorridorS3R3-v0
+```
+Make sure to use the best hyperparameters for each environment, as listed in the paper. 
 
 ## Overview of RIDE
 ![RIDE Overview](/figures/ride_overview.png)
