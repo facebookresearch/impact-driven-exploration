@@ -66,6 +66,8 @@ MiniGrid-KeyCorridorS3R3-v0
 ```
 Make sure to use the best hyperparameters for each environment, as listed in the paper. 
 
+To run different seeds for a model, change the ```--run_id``` argument.
+
 ## Overview of RIDE
 ![RIDE Overview](/figures/ride_overview.png)
 
