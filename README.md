@@ -48,10 +48,22 @@ python setup.py install
 ```
 cd impact-driven-exploration
 
-OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-ObstructedMaze-2Dlh-v0 
+OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-MultiRoom-N7-S4-v0 --total_frames 30000000 --intrinsic_reward_coef 0.1 --entropy_cost 0.0005
 
-OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-KeyCorridorS3R3-v0 \
---intrinsic_reward_coef 0.1 --entropy_cost 0.0005
+OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-MultiRoomNoisyTV-N7-S4-v0 --total_frames 30000000 --intrinsic_reward_coef 0.1 --entropy_cost 0.0005
+
+OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-MultiRoom-N7-S8-v0 --total_frames 30000000 --intrinsic_reward_coef 0.5 --entropy_cost 0.001
+
+OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-MultiRoom-N10-S4-v0 --total_frames 30000000 --intrinsic_reward_coef 0.1 --entropy_cost 0.0005
+
+OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-KeyCorridor-S3-R3-v0 --total_frames 30000000 --intrinsic_reward_coef 0.1 --entropy_cost 0.0005
+
+OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-ObstructedMaze-2Dlh-v0 --total_frames 100000000 --intrinsic_reward_coef 0.5 --entropy_cost 0.001
+
+OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-MultiRoom-N10-S10-v0 --total_frames 100000000 --intrinsic_reward_coef 0.5 --entropy_cost 0.001
+
+OMP_NUM_THREADS=1 python main.py --model ride --env MiniGrid-MultiRoom-N12-S10-v0 --total_frames 100000000 --intrinsic_reward_coef 0.5 --entropy_cost 0.001
+
 ```
 To train RIDE on the other MiniGrid environments used in our paper, replace the ```--env``` argument above with each of the following:
 ```
