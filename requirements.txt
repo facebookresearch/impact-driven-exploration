@@ -18,7 +18,7 @@ nes-py==8.1.1
 nodeenv==1.4.0
 numpy==1.17.4
 olefile==0.46
-opencv-python==4.1.2.30
+opencv-python==4.2.0.32
 Pillow==8.1.1
 pre-commit==2.5.1
 pycparser==2.19
