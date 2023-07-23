@@ -5,7 +5,7 @@ cfgv==3.1.0
 cloudpickle==1.2.2
 distlib==0.3.0
 filelock==3.0.12
-future==0.18.2
+future==0.18.3
 gitdb2==2.0.6
 GitPython==3.0.5
 gym==0.15.4
