@@ -7,7 +7,7 @@ distlib==0.3.0
 filelock==3.0.12
 future==0.18.2
 gitdb2==2.0.6
-GitPython==3.0.5
+GitPython==3.1.34
 gym==0.15.4
 -e git+https://github.com/maximecb/gym-minigrid.git@b84d99a2fbb481977172a85661eee812f022f130#egg=gym_minigrid
 gym-super-mario-bros==7.3.0
